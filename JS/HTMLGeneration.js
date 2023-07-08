@@ -15,32 +15,33 @@ const genDescription = (node) => {
     if (node.description) {
         description.innerHTML = "&nbsp;// ";
         let firstLine = node.description.split("\n")[0].trim();
-        description.appendText(firstLine);
+        description.appendChild(evalLinks(firstLine));
     }
     return description;
 }
 
-const genType = (type) => {
-    let span = document.createElement('span');
-    span.classList.add('type');
+const evalLinks = (type, parent) => {
+    if (!parent) {
+        parent = document.createElement('span');
+        parent.classList.add('type');
+    }
 
     const re = /\{\{[a-f0-9]+}}/g;
     let matches = [...type.matchAll(re)];
     let prev = 0;
 
     matches.forEach((match, index) => {
-        span.appendText(type.slice(prev, match.index));
+        parent.appendText(type.slice(prev, match.index));
         prev = match.index + match[0].length;
 
         let a = document.createElement('a');
         let loc = ids[match[0].slice(2, -2)];
         a.innerHTML += loc.split("/").pop();
         a.href = loc
-        span.appendChild(a);
+        parent.appendChild(a);
     })
-    span.appendText(type.slice(prev));
-    
-    return span;
+    parent.appendText(type.slice(prev));
+    return parent;
 }
 
 const genParam = (param) => {
@@ -49,9 +50,9 @@ const genParam = (param) => {
     paramSpan.appendText(param.name);
     paramSpan.appendText(": ");
 
-    let typeSpan = genType(param.type);
+    let typeSpan = evalLinks(param.type);
     paramSpan.appendChild(typeSpan);
-    
+
     return paramSpan;
 }
 
@@ -80,7 +81,7 @@ const genFunctionSummary = (node) => {
     
     if (node.return) {
         functionSpan.appendText(": ");
-        functionSpan.appendChild(genType(node.return.type));
+        functionSpan.appendChild(evalLinks(node.return.type));
     }
     
     functionSpan.appendChild(genDescription(node));
@@ -161,15 +162,15 @@ const genStruct = (node) => {
     if (node.fields) {
         node.fields.forEach((field) => {
             let p = document.createElement('p');
-            p.classList.add('field');
+            p.classList.add('field-long');
             p.appendChild(genParam(field));
             p.appendChild(genDescription(field));
             structDiv.appendChild(p);
         })
     }
-    
+
     structDiv.appendText("}");
-    
+
     return structDiv;
 }
 
@@ -190,7 +191,7 @@ const genFunction = (node) => {
     p.classList.add('function');
     p.appendText("def ");
     if (node.kind === "method") {
-        p.appendChild(genType(node.parent));
+        p.appendChild(evalLinks(node.parent));
         p.appendText("::");
     }
     p.appendText(node.name);
@@ -218,7 +219,7 @@ const genFunction = (node) => {
 
     if (node.return) {
         returnP.appendText(": ");
-        returnP.appendChild(genType(node.return.type));
+        returnP.appendChild(evalLinks(node.return.type));
         returnP.appendChild(genDescription(node.return));
     }
     functionDiv.appendChild(returnP);

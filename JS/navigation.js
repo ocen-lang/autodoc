@@ -110,7 +110,8 @@ function addMainContent(node) {
     if (node.description) {
         let descP = document.createElement('pre');
         descP.classList.add('full-description');
-        descP.appendText(node.description+"\n");
+        let desc = node.description+"\n"
+        evalLinks(desc, descP)
         main.appendChild(descP);
     }
 
@@ -118,13 +119,16 @@ function addMainContent(node) {
         case "union":
         case "struct":
             main.appendChild(genStruct(node));
+            main.appendChild(document.createElement('br'))
             break;
         case "enum":
             main.appendChild(genEnum(node));
+            main.appendChild(document.createElement('br'))
             break;
         case "method":
         case "function":
             main.appendChild(genFunction(node));
+            main.appendChild(document.createElement('br'))
             break;
     }
 
@@ -153,6 +157,7 @@ function addMainContent(node) {
                 default:
                     console.log(node);
             }
+            main.appendChild(document.createElement('br'))
         }
     })
 }

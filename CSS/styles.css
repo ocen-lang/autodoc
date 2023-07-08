@@ -135,3 +135,10 @@ main section {
     display: flex;
     width: 100%;
 }
+
+.field-long {
+    margin-left: 30px;
+}
+.param-long {
+    margin-left: 30px;
+}
