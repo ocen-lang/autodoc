@@ -5,11 +5,7 @@ HTMLElement.prototype.appendText = function(text) {
 const genLink = (parentName, childName) => {
     let a = document.createElement('a');
     a.appendText(childName);
-    a.addEventListener('click', () => {
-        currentLocation.push(parentName);
-        currentLocation.push(childName);
-        populateLocation();
-    });
+    a.href = `${currentURL}/${parentName}/${childName}`
     return a;
 }
 
@@ -36,11 +32,8 @@ const genType = (type) => {
 
         let a = document.createElement('a');
         let loc = ids[match[0].slice(2, -2)];
-        a.innerHTML += loc[loc.length - 1];
-        a.addEventListener('click', () => {
-            currentLocation = loc;
-            populateLocation();
-        })
+        a.innerHTML += loc.split("/").pop();
+        a.href = loc
         span.appendChild(a);
     })
     span.appendText(type.slice(prev));
@@ -60,7 +53,7 @@ const genParam = (param) => {
     return paramSpan;
 }
 
-const genFunction = (node) => {
+const genFunctionSummary = (node) => {
     let functionSpan = document.createElement('span');
     functionSpan.classList.add('function');
     functionSpan.appendText("def ");
@@ -187,4 +180,41 @@ const genHeader = (title) => {
     header.appendChild(document.createElement('hr'));
     
     return header;
+}
+
+const genFunction = (node) => {
+    let functionDiv = document.createElement('div');
+    let p = document.createElement('p');
+    p.classList.add('function');
+    p.appendText("def ");
+    p.appendText(node.name);
+    p.appendText("(");
+    functionDiv.appendChild(p);
+
+    node["params"].forEach((param, index) => {
+        let paramP = document.createElement('p');
+        if (param.name === "this" && index === 0) {
+            if (param.type[0] === "&") {
+                paramP.appendText("&this");
+            } else {
+                paramP.appendText("this");
+            }
+        } else {
+            paramP.appendChild(genParam(param));
+        }
+        paramP.appendText(",");
+        paramP.appendChild(genDescription(param));
+        functionDiv.appendChild(paramP);
+    });
+    let returnP = document.createElement('p');
+    returnP.appendText(")");
+
+    if (node.return) {
+        returnP.appendText(": ");
+        returnP.appendChild(genType(node.return.type));
+        returnP.appendChild(genDescription(node.return));
+    }
+    functionDiv.appendChild(returnP);
+
+    return functionDiv;
 }
