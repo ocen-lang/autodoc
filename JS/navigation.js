@@ -38,6 +38,10 @@ function getDocs() {
         return response.json();
     }).then(data => {
         docs = data
+        if (window.location.hash !== "") {
+            currentURL = window.location.hash;
+        }
+
         populateLocation();
     }).catch(err => {
         console.log(err);
@@ -55,7 +59,7 @@ function addNavContent(node, name, title) {
         li.appendChild(genLink(name, grandchild));
         ul.appendChild(li);
     })
-    
+
     nav.appendChild(h2);
     nav.appendChild(line);
     nav.appendChild(ul);
@@ -103,6 +107,13 @@ function addFunctionMethodContent(node, title) {
 }
 
 function addMainContent(node) {
+    if (node.description) {
+        let descP = document.createElement('pre');
+        descP.classList.add('full-description');
+        descP.appendText(node.description+"\n");
+        main.appendChild(descP);
+    }
+
     switch (node.kind) {
         case "union":
         case "struct":
@@ -116,7 +127,7 @@ function addMainContent(node) {
             main.appendChild(genFunction(node));
             break;
     }
-    
+
     nodeMap.forEach((value, key) => {
         if (node[key] && Object.keys(node[key]).length > 0) {
             switch (key) {
@@ -131,7 +142,7 @@ function addMainContent(node) {
                     addConstantVariableContent(node[key], value);
                     break;
                 case "enums":
-                case "unions":    
+                case "unions":
                 case "structs":
                     addEnumStructContent(node[key], value);
                     break;
@@ -148,25 +159,24 @@ function addMainContent(node) {
 
 function addBackAnchor() {
     let back = document.createElement('a');
-    back.textContent = "back";
-    back.addEventListener('click', () => {
-        window.location.hash = currentURL.split("#")[1].split("/").slice(0, -2).join("/");
-    })
+    back.textContent = "< back";
+    let prevUrl = currentURL.split("#")[1].split("/").slice(0, -2).join("/");
+    back.href = "#" + prevUrl;
     nav.appendChild(back);
 }
 
 function populateLocation() {
     nav.innerHTML = "";
     main.innerHTML = "";
-    
+
     let currentNode = docs;
     let breadcrumb = [];
-    
+
     let currentLocation = currentURL.split("#")[1].split("/");
-    
+
     currentLocation.forEach((item, index) => {
         currentNode = currentNode[item];
-        
+
         // every other item is a breadcrumb
         if (index % 2 === 0) {
             breadcrumb.push(index);
@@ -174,7 +184,7 @@ function populateLocation() {
     })
 
     console.log(currentLocation, currentURL, currentNode)
-    
+
     // add back button if not at root
     if (currentLocation.length > 1) {
         addBackAnchor();
@@ -193,7 +203,7 @@ function populateLocation() {
 function updateBreadcrumb(breadcrumb) {
     toast.innerHTML = "";
     let currentLocation = currentURL.split("#")[1].split("/");
-    
+
     for (let i = 0; i < breadcrumb.length; i++) {
         let a = document.createElement('a');
         a.textContent = currentLocation[breadcrumb[i]];

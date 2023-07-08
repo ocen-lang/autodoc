@@ -12,9 +12,11 @@ const genLink = (parentName, childName) => {
 const genDescription = (node) => {
     let description = document.createElement('span');
     description.classList.add('description');
-    description.innerHTML = "&nbsp;// ";
-    description.appendText(node.description);
-    
+    if (node.description) {
+        description.innerHTML = "&nbsp;// ";
+        let firstLine = node.description.split("\n")[0].trim();
+        description.appendText(firstLine);
+    }
     return description;
 }
 
