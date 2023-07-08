@@ -6,6 +6,18 @@ let currentLocation = ["ocen"];
 let ids;
 let docs;
 
+const nodeMap = new Map([
+    ["namespaces", "Modules"],
+    ["builtins", "Builtins"],
+    ["constants", "Constants"],
+    ["variables", "Variables"],
+    ["enums", "Enums"],
+    ["structs", "Structs"],
+    ["unions", "Unions"],
+    ["functions", "Functions"],
+    ["methods", "Methods"],
+])
+
 function getIds() {
     fetch('../data/ids-min.json').then(response => {
         return response.json();
@@ -50,6 +62,87 @@ function addNavContent(node, name, title) {
     nav.appendChild(ul);
 }
 
+function addNamespaceContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.entries(node).forEach(([name, child]) => {
+        let h3 = document.createElement('h3');
+        h3.appendChild(genLink("namespaces", name));
+        h3.appendChild(genDescription(child));
+        main.appendChild(h3);
+    })
+}
+
+function addBuiltinContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.values(node).forEach((child) => {
+        let h3 = document.createElement('h3');
+        h3.appendChild(genLink("builtins", child.name));
+        h3.appendChild(genDescription(child));
+        main.appendChild(h3);
+    })
+}
+
+function addConstantVariableContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.values(node).forEach((child) => {
+        main.appendChild(genVariable(child));
+    })
+}
+
+function addEnumStructContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.values(node).forEach((child) => {
+        main.appendChild(genSummary(child));
+    })
+}
+
+function addFunctionMethodContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.values(node).forEach((child) => {
+        main.appendChild(genFunction(child));
+    })
+}
+
+function addMainContent(node) {
+    switch (node.kind) {
+        case "union":
+        case "struct":
+            main.appendChild(genStruct(node));
+            break;
+        case "enum":
+            main.appendChild(genEnum(node));
+            break;
+    }
+    
+    nodeMap.forEach((value, key) => {
+        if (node[key] && Object.keys(node[key]).length > 0) {
+            switch (key) {
+                case "namespaces":
+                    addNamespaceContent(node[key], value);
+                    break;
+                case "builtins":
+                    addBuiltinContent(node[key], value);
+                    break;
+                case "constants":
+                case "variables":
+                    addConstantVariableContent(node[key], value);
+                    break;
+                case "enums":
+                case "unions":    
+                case "structs":
+                    addEnumStructContent(node[key], value);
+                    break;
+                case "functions":
+                case "methods":
+                    addFunctionMethodContent(node[key], value);
+                    break;
+                default:
+                    console.log(node);
+            }
+        }
+    })
+}
+
 function addBackAnchor() {
     let back = document.createElement('a');
     back.textContent = "back";
@@ -81,139 +174,19 @@ function populateLocation() {
     if (currentLocation.length > 1) {
         addBackAnchor();
     }
-    
-    const nodeMap = new Map([
-        ["namespaces", "Modules"],
-        ["builtins", "Builtins"],
-        ["constants", "Constants"],
-        ["variables", "Variables"],
-        ["enums", "Enums"],
-        ["structs", "Structs"],
-        ["functions", "Functions"],
-        ["methods", "Methods"],
-    ])
 
     nodeMap.forEach((value, key) => {
         if (currentNode[key] && Object.keys(currentNode[key]).length > 0) {
+            console.log(key, value);
             addNavContent(currentNode[key], key, value);
         }
     })
-    
-    // add main content
+    addMainContent(currentNode)
     updateBreadcrumb(breadcrumb);
-    
-    if (currentNode.kind === "namespace" && currentNode.description) {
-        let description = document.createElement('p');
-        description.textContent = currentNode.description;
-        main.appendChild(description);
-    }
-    
-    if (currentNode.kind === "builtin") {
-        let h2 = document.createElement('h2');
-        h2.textContent = currentNode.name;
-        main.appendChild(h2);
-        
-        let description = document.createElement('p');
-        description.textContent = currentNode.description;
-        main.appendChild(description);
-        main.appendChild(document.createElement('hr'));
-    }
-
-    if (currentNode.methods && Object.keys(currentNode.methods).length > 0) {
-        let methods = document.createElement('h3');
-        methods.textContent = "Methods";
-        main.appendChild(methods);
-        main.appendChild(document.createElement('hr'));
-
-
-        let section = document.createElement('section');
-        Object.values(currentNode.methods).forEach((method) => {
-            let div = document.createElement('div');
-            div.classList.add('method-function');
-            let a = document.createElement('a');
-            a.textContent = method.name;
-            a.addEventListener('click', () => {
-                currentLocation.push("methods");
-                currentLocation.push(method.name);
-                populateLocation();
-            })
-            let span = document.createElement('span');
-            span.innerHTML = "("
-            method["params"].forEach((param, index) => {
-                if (param.name === "this" && index === 0) {
-                    if (param.type[0] === "&") {
-                        span.appendChild(document.createTextNode("&this"))
-                    } else {
-                        span.appendChild(document.createTextNode("this"))
-                    }
-                    return;
-                }
-                if (index !== 0) {
-                    span.appendChild(document.createTextNode(", "));
-                }
-                let paramSpan = document.createElement('span');
-                paramSpan.innerHTML = param.name;
-                paramSpan.innerHTML += ": ";
-                
-                let typeSpan = parseType(param.name, param.type);
-                paramSpan.appendChild(typeSpan);
-                
-                span.appendChild(paramSpan);
-            })
-            span.appendChild(document.createTextNode("): "));
-            returnSpan = parseType(method.name, method.return.type);
-            span.appendChild(returnSpan);
-            
-            
-            div.appendChild(a);
-            div.appendChild(span);
-            section.appendChild(div);
-            if (method.description) {
-                let description = document.createElement('p');
-                description.textContent = method.description;
-                section.appendChild(description);
-            }
-        })
-        main.appendChild(section);
-    }
-    
-}
-
-function parseType(name, type) {
-    let span = document.createElement('span');
-    span.classList.add('type');
-    const re = /\{\{[a-f0-9]+}}/g;
-    let matches = [...type.matchAll(re)];
-    let prev = 0;
-    console.log(matches);
-    matches.forEach((match, index) => {
-        span.appendChild(document.createTextNode(type.slice(prev, match.index)));
-        prev = match.index + match[0].length;
-        
-        let a = document.createElement('a');
-        let loc = ids[match[0].slice(2, -2)];
-        a.innerHTML += loc[loc.length - 1];
-        a.addEventListener('click', () => {
-            currentLocation = loc;
-            populateLocation();
-        })
-        span.appendChild(a);
-    })
-    span.appendChild(document.createTextNode(type.slice(prev)));
-
-    console.log(span);
-    return span;
 }
 
 function updateBreadcrumb(breadcrumb) {
     toast.innerHTML = "";
-    
-    // homeAnchor = document.createElement('a');
-    // homeAnchor.addEventListener('click', () => {
-    //     currentLocation = ["ocen"];
-    //     populateLocation();
-    // })
-    // toast.appendChild(homeAnchor);
     
     for (let i = 0; i < breadcrumb.length; i++) {
         let a = document.createElement('a');

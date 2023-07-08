@@ -18,20 +18,13 @@ nav {
     overflow-x: hidden;
 }
 
-nav::-webkit-scrollbar {
+nav::-webkit-scrollbar, main::-webkit-scrollbar {
     width: 10px;
 }
 
-nav::-webkit-scrollbar-thumb {
+nav::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
     background-color: rgb(94, 143, 220);
 
-}
-
-nav::-webkit-scrollbar-track {
-    background: #222222;
-    border-left: 3px solid transparent;
-    border-right: 3px solid transparent;
-    background-clip: padding-box;
 }
 
 nav img {
@@ -112,8 +105,11 @@ main {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 0 20px;
+    height: 100vh;
+    padding: 0 40px;
     font-family: 'JetBrains Mono', monospace;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #breadcrumb {
