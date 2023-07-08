@@ -187,12 +187,17 @@ const genFunction = (node) => {
     let p = document.createElement('p');
     p.classList.add('function');
     p.appendText("def ");
+    if (node.kind === "method") {
+        p.appendChild(genType(node.parent));
+        p.appendText("::");
+    }
     p.appendText(node.name);
     p.appendText("(");
     functionDiv.appendChild(p);
 
     node["params"].forEach((param, index) => {
         let paramP = document.createElement('p');
+        paramP.classList.add('param-long');
         if (param.name === "this" && index === 0) {
             if (param.type[0] === "&") {
                 paramP.appendText("&this");
