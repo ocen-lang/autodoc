@@ -24,7 +24,7 @@ window.addEventListener('hashchange', (event) => {
 })
 
 function getIds() {
-    fetch('../data/ids-min.json').then(response => {
+    fetch('/data/ids-min.json').then(response => {
         return response.json();
     }).then(data => {
         ids = data
@@ -34,7 +34,7 @@ function getIds() {
 }
 
 function getDocs() {
-    fetch('../data/docs-min.json').then(response => {
+    fetch('/data/docs-min.json').then(response => {
         return response.json();
     }).then(data => {
         docs = data
