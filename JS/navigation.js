@@ -20,6 +20,9 @@ const nodeMap = new Map([
 
 window.addEventListener('hashchange', (event) => {
     currentURL = window.location.hash;
+    if (window.location.hash === "") {
+        currentURL = "#ocen"
+    }
     populateLocation();
 })
 
