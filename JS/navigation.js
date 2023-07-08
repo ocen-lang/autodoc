@@ -29,7 +29,13 @@ function getIds() {
     }).then(data => {
         ids = data
     }).catch(err => {
-        console.log(err);
+        fetch('/autodoc/data/ids-min.json').then(response => {
+            return response.json();
+        }).then(data => {
+            ids = data
+        }).catch(err => {
+            console.log(err);
+        })
     })
 }
 
@@ -44,7 +50,18 @@ function getDocs() {
 
         populateLocation();
     }).catch(err => {
-        console.log(err);
+        fetch('/autodoc/data/docs-min.json').then(response => {
+            return response.json();
+        }).then(data => {
+            docs = data
+            if (window.location.hash !== "") {
+                currentURL = window.location.hash;
+            }
+
+            populateLocation();
+        }).catch(err => {
+            console.log(err);
+        })
     })
 }
 
