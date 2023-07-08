@@ -1,9 +1,19 @@
-HTMLElement.prototype.appendText = function(text) {
-    this.appendChild(document.createTextNode(text));
+HTMLElement.prototype.appendText = function(text, className) {
+    if (className) {
+        let span = document.createElement('span');
+        span.classList.add(className);
+        span.appendChild(document.createTextNode(text));
+        this.appendChild(span);
+    } else {
+        this.appendChild(document.createTextNode(text));
+    }
 }
 
-const genLink = (parentName, childName) => {
+const genLink = (parentName, childName, className) => {
     let a = document.createElement('a');
+    if (className) {
+        a.classList.add(className);
+    }
     a.appendText(childName);
     a.href = `${currentURL}/${parentName}/${childName}`
     return a;
@@ -20,7 +30,22 @@ const genDescription = (node) => {
     return description;
 }
 
-const evalLinks = (type, parent) => {
+const colourizeType = (type) => {
+    let span = document.createElement('span');
+    for (x of type) {
+        if (x === "&") {
+            span.appendText(x, "keyword");
+        } else if (x.match(/[a-zA-Z]/)) {
+            span.appendText(x, "name");
+        } else {
+            span.appendText(x, "punctuation");
+        }
+    }
+    
+    return span;
+}
+
+const evalLinks = (type, colourize, parent) => {
     if (!parent) {
         parent = document.createElement('span');
         parent.classList.add('type');
@@ -31,7 +56,12 @@ const evalLinks = (type, parent) => {
     let prev = 0;
 
     matches.forEach((match, index) => {
-        parent.appendText(type.slice(prev, match.index));
+        let text = type.slice(prev, match.index);
+        if (colourize) {
+            parent.appendChild(colourizeType(text));
+        } else {
+            parent.appendText(text);
+        }
         prev = match.index + match[0].length;
 
         let a = document.createElement('a');
@@ -40,7 +70,12 @@ const evalLinks = (type, parent) => {
         a.href = loc
         parent.appendChild(a);
     })
-    parent.appendText(type.slice(prev));
+    let text = type.slice(prev);
+    if (colourize) {
+        parent.appendChild(colourizeType(text));
+    } else {
+        parent.appendText(text);
+    }
     return parent;
 }
 
@@ -48,9 +83,9 @@ const genParam = (param) => {
     let paramSpan = document.createElement('span');
     paramSpan.classList.add('param');
     paramSpan.appendText(param.name);
-    paramSpan.appendText(": ");
+    paramSpan.appendText(": ", "punctuation");
 
-    let typeSpan = evalLinks(param.type);
+    let typeSpan = evalLinks(param.type, true);
     paramSpan.appendChild(typeSpan);
 
     return paramSpan;
@@ -59,29 +94,28 @@ const genParam = (param) => {
 const genFunctionSummary = (node) => {
     let functionSpan = document.createElement('span');
     functionSpan.classList.add('function');
-    functionSpan.appendText("def ");
-    functionSpan.appendChild(genLink(node.kind + "s", node.name));
-    functionSpan.appendText("(");
+    functionSpan.appendText("def ", "keyword");
+    functionSpan.appendChild(genLink(node.kind + "s", node.name, "callable"));
+    functionSpan.appendText("(", "punctuation");
 
     node["params"].forEach((param, index) => {
         if (param.name === "this" && index === 0) {
             if (param.type[0] === "&") {
-                functionSpan.appendText("&this");
-            } else {
-                functionSpan.appendText("this");
-            }
+                functionSpan.appendText("&", "keyword");
+            } 
+            functionSpan.appendText("this", "this-param");
             return;
         }
         if (index !== 0) {
-            functionSpan.appendText(", ");
+            functionSpan.appendText(", ", "punctuation");
         }
         functionSpan.appendChild(genParam(param));
     });
-    functionSpan.appendText(")");
+    functionSpan.appendText(")", "punctuation");
     
     if (node.return) {
-        functionSpan.appendText(": ");
-        functionSpan.appendChild(evalLinks(node.return.type));
+        functionSpan.appendText(": ", "punctuation");
+        functionSpan.appendChild(evalLinks(node.return.type, true));
     }
     
     functionSpan.appendChild(genDescription(node));
@@ -93,9 +127,9 @@ const genVariable = (node) => {
     let variableSpan = document.createElement('span');
     variableSpan.classList.add('variable');
     if (node.kind === "constant") {
-        variableSpan.appendText("const ");
+        variableSpan.appendText("const ", "keyword");
     } else {
-        variableSpan.appendText("let ");
+        variableSpan.appendText("let ", "keyword");
     }
     variableSpan.appendChild(genParam(node));
     variableSpan.appendChild(genDescription(node));
@@ -106,7 +140,7 @@ const genVariable = (node) => {
 const genSummary = (child) => {
     let summarySpan = document.createElement('span');
     summarySpan.classList.add(child.kind);
-    summarySpan.appendText(child.kind + " ");
+    summarySpan.appendText(child.kind + " ", "keyword");
     summarySpan.appendChild(genLink(child.kind + "s", child.name));
     
     return summarySpan;
@@ -115,24 +149,24 @@ const genSummary = (child) => {
 const genEnum = (node) => {
     let enumDiv = document.createElement('div');
     enumDiv.classList.add('enum');
-    enumDiv.appendText("enum ");
+    enumDiv.appendText("enum ", "keyword");
     let nameSpan = document.createElement('span');
     nameSpan.classList.add('name');
     nameSpan.appendText(node.name + " ");
     enumDiv.appendChild(nameSpan);
-    enumDiv.appendText("{");
+    enumDiv.appendText("{", "punctuation");
 
     if (node.fields) {
         node.fields.forEach((field) => {
             let p = document.createElement('p');
-            p.classList.add('field');
+            p.classList.add('field-long');
             p.appendText(field.name);
             p.appendChild(genDescription(field));
             enumDiv.appendChild(p);
         })
     }
     
-    enumDiv.appendText("}");
+    enumDiv.appendText("}", "punctuation");
     
     return enumDiv;
 }
@@ -140,24 +174,24 @@ const genEnum = (node) => {
 const genStruct = (node) => {
     let structDiv = document.createElement('div');
     structDiv.classList.add(node.kind);
-    structDiv.appendText(node.kind + " ");
+    structDiv.appendText(node.kind + " ", "keyword");
     let nameSpan = document.createElement('span');
     nameSpan.classList.add('name');
     if (node.is_templated) {
         nameSpan.appendText(node.name);
-        nameSpan.appendText("<");
+        nameSpan.appendText("<", "punctuation");
         node.template_params.forEach((param, index) => {
             if (index !== 0) {
-                nameSpan.appendText(", ");
+                nameSpan.appendText(", ", "punctuation");
             }
             nameSpan.appendText(param);
         })
-        nameSpan.appendText("> ");
+        nameSpan.appendText("> ", "punctuation");
     } else {
         nameSpan.appendText(node.name + " ");
     }
     structDiv.appendChild(nameSpan);
-    structDiv.appendText("{");
+    structDiv.appendText("{", "punctuation");
 
     if (node.fields) {
         node.fields.forEach((field) => {
@@ -169,7 +203,7 @@ const genStruct = (node) => {
         })
     }
 
-    structDiv.appendText("}");
+    structDiv.appendText("}", "punctuation");
 
     return structDiv;
 }
@@ -188,14 +222,14 @@ const genHeader = (title) => {
 const genFunction = (node) => {
     let functionDiv = document.createElement('div');
     let p = document.createElement('p');
-    p.classList.add('function');
-    p.appendText("def ");
+    p.classList.add('name');
+    p.appendText("def ", "keyword");
     if (node.kind === "method") {
         p.appendChild(evalLinks(node.parent));
-        p.appendText("::");
+        p.appendText("::", "punctuation");
     }
-    p.appendText(node.name);
-    p.appendText("(");
+    p.appendText(node.name, "callable");
+    p.appendText("(", "punctuation");
     functionDiv.appendChild(p);
 
     node["params"].forEach((param, index) => {
@@ -203,23 +237,22 @@ const genFunction = (node) => {
         paramP.classList.add('param-long');
         if (param.name === "this" && index === 0) {
             if (param.type[0] === "&") {
-                paramP.appendText("&this");
-            } else {
-                paramP.appendText("this");
+                paramP.appendText("&", "keyword");
             }
+            paramP.appendText("this", "this-param");
         } else {
             paramP.appendChild(genParam(param));
         }
-        paramP.appendText(",");
+        paramP.appendText(",", "punctuation");
         paramP.appendChild(genDescription(param));
         functionDiv.appendChild(paramP);
     });
     let returnP = document.createElement('p');
-    returnP.appendText(")");
+    returnP.appendText(")", "punctuation");
 
     if (node.return) {
-        returnP.appendText(": ");
-        returnP.appendChild(evalLinks(node.return.type));
+        returnP.appendText(": ", "punctuation");
+        returnP.appendChild(evalLinks(node.return.type, true));
         returnP.appendChild(genDescription(node.return));
     }
     functionDiv.appendChild(returnP);

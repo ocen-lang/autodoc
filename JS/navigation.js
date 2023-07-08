@@ -49,9 +49,7 @@ function getDocs() {
 }
 
 function addNavContent(node, name, title) {
-    let h2 = document.createElement('h2');
-    h2.textContent = title;
-    let line = document.createElement('hr');
+    let header = genHeader(title);
     let ul = document.createElement('ul');
 
     Object.keys(node).forEach((grandchild) => {
@@ -59,9 +57,8 @@ function addNavContent(node, name, title) {
         li.appendChild(genLink(name, grandchild));
         ul.appendChild(li);
     })
-
-    nav.appendChild(h2);
-    nav.appendChild(line);
+    
+    nav.appendChild(header);
     nav.appendChild(ul);
 }
 
@@ -69,7 +66,7 @@ function addNamespaceContent(node, title) {
     main.appendChild(genHeader(title))
     Object.entries(node).forEach(([name, child]) => {
         let h3 = document.createElement('h3');
-        h3.appendChild(genLink("namespaces", name));
+        h3.appendChild(genLink("namespaces", name, "namespace"));
         h3.appendChild(genDescription(child));
         main.appendChild(h3);
     })
@@ -111,7 +108,7 @@ function addMainContent(node) {
         let descP = document.createElement('pre');
         descP.classList.add('full-description');
         let desc = node.description+"\n"
-        evalLinks(desc, descP)
+        evalLinks(desc, false, descP)
         main.appendChild(descP);
     }
 
@@ -197,7 +194,9 @@ function populateLocation() {
 
     nodeMap.forEach((value, key) => {
         if (currentNode[key] && Object.keys(currentNode[key]).length > 0) {
-            console.log(key, value);
+            if (key === "constants" || key === "variables") {
+                return;
+            }
             addNavContent(currentNode[key], key, value);
         }
     })
@@ -215,7 +214,7 @@ function updateBreadcrumb(breadcrumb) {
         let parts = currentLocation.slice(0, breadcrumb[i] + 1);
         a.href = "#" + parts.join("/");
         if (i !== 0) {
-            toast.appendChild(document.createTextNode("::"));
+            toast.appendChild(document.createTextNode("​::"));
         }
         toast.appendChild(a);
     }
