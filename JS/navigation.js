@@ -47,16 +47,17 @@ function getDocs() {
         return response.json();
     }).then(data => {
         docs = data
+        parseNode(docs, "#");
         if (window.location.hash !== "") {
             currentURL = window.location.hash;
         }
-
         populateLocation();
     }).catch(err => {
         fetch('/autodoc/data/docs-min.json').then(response => {
             return response.json();
         }).then(data => {
             docs = data
+            parseNode(docs, "#");
             if (window.location.hash !== "") {
                 currentURL = window.location.hash;
             }
