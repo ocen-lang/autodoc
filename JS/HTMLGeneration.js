@@ -41,8 +41,26 @@ const colourizeType = (type) => {
             span.appendText(x, "punctuation");
         }
     }
-    
+
     return span;
+}
+
+const convertLinksToMarkdown = (text) => {
+    let new_text = "";
+    const re = /\{\{[a-f0-9]+}}/g;
+    let matches = [...text.matchAll(re)];
+    let prev = 0;
+
+    matches.forEach((match, index) => {
+        new_text += text.slice(prev, match.index);
+        prev = match.index + match[0].length;
+
+        let loc = ids[match[0].slice(2, -2)];
+        let name = loc.split("/").pop();
+        new_text += `[${name}](${loc})`;
+    })
+    new_text += text.slice(prev);
+    return new_text;
 }
 
 const evalLinks = (type, colourize, parent) => {
@@ -102,7 +120,7 @@ const genFunctionSummary = (node) => {
         if (param.name === "this" && index === 0) {
             if (param.type[0] === "&") {
                 functionSpan.appendText("&", "keyword");
-            } 
+            }
             functionSpan.appendText("this", "this-param");
             return;
         }
@@ -112,14 +130,14 @@ const genFunctionSummary = (node) => {
         functionSpan.appendChild(genParam(param));
     });
     functionSpan.appendText(")", "punctuation");
-    
+
     if (node.return) {
         functionSpan.appendText(": ", "punctuation");
         functionSpan.appendChild(evalLinks(node.return.type, true));
     }
-    
+
     functionSpan.appendChild(genDescription(node));
-    
+
     return functionSpan;
 }
 
@@ -133,7 +151,7 @@ const genVariable = (node) => {
     }
     variableSpan.appendChild(genParam(node));
     variableSpan.appendChild(genDescription(node));
-    
+
     return variableSpan;
 }
 
@@ -142,7 +160,8 @@ const genSummary = (child) => {
     summarySpan.classList.add(child.kind);
     summarySpan.appendText(child.kind + " ", "keyword");
     summarySpan.appendChild(genLink(child.kind + "s", child.name));
-    
+    summarySpan.appendChild(genDescription(child));
+
     return summarySpan;
 }
 
@@ -165,9 +184,9 @@ const genEnum = (node) => {
             enumDiv.appendChild(p);
         })
     }
-    
+
     enumDiv.appendText("}", "punctuation");
-    
+
     return enumDiv;
 }
 
@@ -215,7 +234,7 @@ const genHeader = (title) => {
     h2.textContent = title;
     header.appendChild(h2);
     header.appendChild(document.createElement('hr'));
-    
+
     return header;
 }
 

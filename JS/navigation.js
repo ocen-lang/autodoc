@@ -33,7 +33,7 @@ function addNavContent(node, name, title) {
         li.appendChild(genLink(name, grandchild));
         ul.appendChild(li);
     })
-    
+
     nav.appendChild(header);
     nav.appendChild(ul);
 }
@@ -83,18 +83,18 @@ function addFunctionMethodContent(node, title) {
     })
 }
 
-// FIXME: evaluation links are broken
 function addMainContent(node) {
     if (node.description) {
         let descP = document.createElement('pre');
         descP.classList.add('full-description');
         let desc = node.description.trim();
+        desc = convertLinksToMarkdown(desc);
+
         let showDown = new showdown.Converter();
         desc = showDown.makeHtml(desc);
         let div = document.createElement('div');
         div.classList.add('full-description');
         div.innerHTML = desc;
-        // evalLinks(desc, false, descP)
         main.appendChild(div);
     }
 

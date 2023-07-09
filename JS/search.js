@@ -6,14 +6,14 @@ function searchDocs() {
     if (query.length === 0) {
         return results;
     }
-    
+
     // search for start of word
     Object.keys(searchMapping).forEach((key) => {
         if (key.toLowerCase().startsWith(query.toLowerCase())) {
             results.set(key, searchMapping[key]);
         }
     })
-    
+
     // search for inclusion
     Object.keys(searchMapping).forEach((key) => {
         if (results[key]) {
@@ -36,17 +36,21 @@ search.addEventListener('input', (e) => {
     const results = searchDocs();
     if (results.size > 0) {
         main.innerHTML = "";
-        results.forEach(([path, full_name], name) => {
+        results.forEach(([path, full_name, kind], name) => {
             let resultDiv = document.createElement('div');
             resultDiv.classList.add('search-result');
+
             let resultLink = document.createElement('a');
             resultLink.href = path;
             resultLink.textContent = name;
             resultDiv.appendChild(resultLink);
+
+            resultDiv.appendText(` (${kind})`, "search-result-kind");
+
             let p = document.createElement('p');
             p.appendText(full_name, "description");
             resultDiv.appendChild(p);
-            
+
             main.appendChild(resultDiv);
         })
     } else {

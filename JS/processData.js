@@ -17,9 +17,14 @@ function parseNode(node, path, name, depth) {
         case "variable":
         case "namespace":
             if (node.name) {
+                let kind = node.kind;
+                if (kind == "namespace") {
+                    kind = "module";
+                }
                 searchMapping[node.name] = [
                     path.slice(0, -1),
-                    name.slice(0, -2)
+                    name.slice(0, -2),
+                    kind
                 ]
             }
             break;
@@ -56,19 +61,28 @@ function sortObjectKeys(obj) {
 }
 
 async function setup() {
-    let response = await fetch('/data/docs-min.json');
-    if (response.status !== 200) {
-        response = await fetch('/autodoc/data/docs-min.json');
+    try {
+        // Local testing
+        let response = await fetch('docs.json');
+
+        // // Github deployment
+        if (response.status !== 200) {
+            response = await fetch('https://raw.githubusercontent.com/ocen-lang/ocen/docs/docs.json');
+        }
+
+        let jsonDocs = await response.json();
+        docs = sortObjectKeys(jsonDocs);
+        parseNode(docs, "#", "", 0);
+
+        if (window.location.hash !== "") {
+            currentURL = window.location.hash;
+        }
+        populatePage();
+
+    } catch (e) {
+        main.appendText("Failed to load docs");
+        return;
     }
-    
-    let jsonDocs = await response.json();
-    docs = sortObjectKeys(jsonDocs);
-    parseNode(docs, "#", "", 0);
-    
-    if (window.location.hash !== "") {
-        currentURL = window.location.hash;
-    }
-    populatePage();
 }
 
 setup();

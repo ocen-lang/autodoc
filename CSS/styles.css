@@ -223,18 +223,28 @@ a.namespace:hover {
     margin-bottom: 15px;
 }
 
+.search-result-kind {
+    color: #aa9cf1;
+    font-style: italic;
+}
+
 .back, .full-description {
     font-family: 'Montserrat', sans-serif;
 }
 
 .full-description{
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-size: 18px;
 }
 
 .full-description ul {
     list-style: disc;
+    margin-bottom: 20px;
     padding-left: 40px;
+}
+
+.full-description p {
+    margin-bottom: 20px;
 }
 
 code {
