@@ -37,36 +37,53 @@ function setupSearch() {
 }
 
 function searchDocs() {
-    let results = [];
+    let results = new Map();
     let query = search.value;
     if (query.length === 0) {
         return results;
     }
+    
+    // search for start of word
     Object.keys(mapping).forEach((key) => {
+        if (key.toLowerCase().startsWith(query.toLowerCase())) {
+            results.set(key, mapping[key]);
+        }
+    })
+    
+    // search for inclusion
+    Object.keys(mapping).forEach((key) => {
+        if (results[key]) {
+            return;
+        }
         if (key.toLowerCase().includes(query.toLowerCase())) {
-            results.push([key, mapping[key]]);
+            results.set(key, mapping[key]);
         }
     })
     return results;
 }
 
-search.addEventListener('keyup', (e) => {
+search.addEventListener('input', (e) => {
     if (search.value.length <= 0) {
         toast.style.display = "block";
-        populateLocation();
+        populatePage();
         return;
     }
     toast.style.display = "none";
     const results = searchDocs();
-    if (results.length > 0) {
+    if (results.size > 0) {
         main.innerHTML = "";
-        results.forEach(([name, [path, full_name]]) => {
-            let a = document.createElement('a');
-            a.href = path;
-            a.textContent = name;
-            main.appendChild(a);
-            main.appendText(full_name, "punctuation")
-            main.appendChild(document.createElement('br'));
+        results.forEach(([path, full_name], name) => {
+            let resultDiv = document.createElement('div');
+            resultDiv.classList.add('search-result');
+            let resultLink = document.createElement('a');
+            resultLink.href = path;
+            resultLink.textContent = name;
+            resultDiv.appendChild(resultLink);
+            let p = document.createElement('p');
+            p.appendText(full_name, "description");
+            resultDiv.appendChild(p);
+            
+            main.appendChild(resultDiv);
         })
     } else {
         main.innerHTML = "No results found";

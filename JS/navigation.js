@@ -23,7 +23,7 @@ window.addEventListener('hashchange', (event) => {
     if (window.location.hash === "") {
         currentURL = "#ocen"
     }
-    populateLocation();
+    populatePage();
 })
 
 function getIds() {
@@ -51,7 +51,7 @@ function getDocs() {
         if (window.location.hash !== "") {
             currentURL = window.location.hash;
         }
-        populateLocation();
+        populatePage();
     }).catch(err => {
         fetch('/autodoc/data/docs-min.json').then(response => {
             return response.json();
@@ -62,7 +62,7 @@ function getDocs() {
                 currentURL = window.location.hash;
             }
 
-            populateLocation();
+            populatePage();
         }).catch(err => {
             console.log(err);
         })
@@ -128,13 +128,19 @@ function addFunctionMethodContent(node, title) {
     })
 }
 
+// FIXME: evaluation links are broken
 function addMainContent(node) {
     if (node.description) {
         let descP = document.createElement('pre');
         descP.classList.add('full-description');
-        let desc = node.description+"\n"
-        evalLinks(desc, false, descP)
-        main.appendChild(descP);
+        let desc = node.description.trim();
+        let showDown = new showdown.Converter();
+        desc = showDown.makeHtml(desc);
+        let div = document.createElement('div');
+        div.classList.add('full-description');
+        div.innerHTML = desc;
+        // evalLinks(desc, false, descP)
+        main.appendChild(div);
     }
 
     switch (node.kind) {
@@ -186,13 +192,14 @@ function addMainContent(node) {
 
 function addBackAnchor() {
     let back = document.createElement('a');
+    back.classList.add('back');
     back.textContent = "< back";
     let prevUrl = currentURL.split("#")[1].split("/").slice(0, -2).join("/");
     back.href = "#" + prevUrl;
     nav.appendChild(back);
 }
 
-function populateLocation() {
+function populatePage() {
     nav.innerHTML = "";
     main.innerHTML = "";
     search.value = "";
@@ -211,8 +218,6 @@ function populateLocation() {
             breadcrumb.push(index);
         }
     })
-
-    console.log(currentLocation, currentURL, currentNode)
 
     // add back button if not at root
     if (currentLocation.length > 1) {

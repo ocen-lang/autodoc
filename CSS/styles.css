@@ -10,7 +10,7 @@ body {
 nav {
     display: flex;
     flex-direction: column;
-    width: 350px;
+    width: 450px;
     height: 100vh;
     background-color: #222;
     padding: 0 20px;
@@ -217,4 +217,42 @@ a.namespace:hover {
     display: table-cell;
     padding-left: 2em;
     width: 100%;
+}
+
+.search-result {
+    margin-bottom: 15px;
+}
+
+.back, .full-description {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.full-description{
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.full-description ul {
+    list-style: disc;
+    padding-left: 40px;
+}
+
+code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #ddd;
+    background-color: #222;
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+
+pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #ddd;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
 }
