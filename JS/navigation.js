@@ -3,8 +3,6 @@ const main = document.querySelector('#main');
 const toast = document.querySelector('#breadcrumb');
 
 let currentURL = "#ocen"
-let ids;
-let docs;
 
 const nodeMap = new Map([
     ["namespaces", "Modules"],
@@ -25,49 +23,6 @@ window.addEventListener('hashchange', (event) => {
     }
     populatePage();
 })
-
-function getIds() {
-    fetch('/data/ids-min.json').then(response => {
-        return response.json();
-    }).then(data => {
-        ids = data
-    }).catch(err => {
-        fetch('/autodoc/data/ids-min.json').then(response => {
-            return response.json();
-        }).then(data => {
-            ids = data
-        }).catch(err => {
-            console.log(err);
-        })
-    })
-}
-
-function getDocs() {
-    fetch('/data/docs-min.json').then(response => {
-        return response.json();
-    }).then(data => {
-        docs = data
-        setupSearch();
-        if (window.location.hash !== "") {
-            currentURL = window.location.hash;
-        }
-        populatePage();
-    }).catch(err => {
-        fetch('/autodoc/data/docs-min.json').then(response => {
-            return response.json();
-        }).then(data => {
-            docs = data
-            setupSearch();
-            if (window.location.hash !== "") {
-                currentURL = window.location.hash;
-            }
-
-            populatePage();
-        }).catch(err => {
-            console.log(err);
-        })
-    })
-}
 
 function addNavContent(node, name, title) {
     let header = genHeader(title);
@@ -251,10 +206,3 @@ function updateBreadcrumb(breadcrumb) {
         toast.appendChild(a);
     }
 }
-
-function setup() {
-    getIds();
-    getDocs();
-}
-
-setup();
