@@ -47,7 +47,7 @@ function getDocs() {
         return response.json();
     }).then(data => {
         docs = data
-        parseNode(docs, "#");
+        setupSearch();
         if (window.location.hash !== "") {
             currentURL = window.location.hash;
         }
@@ -57,7 +57,7 @@ function getDocs() {
             return response.json();
         }).then(data => {
             docs = data
-            parseNode(docs, "#");
+            setupSearch();
             if (window.location.hash !== "") {
                 currentURL = window.location.hash;
             }
@@ -195,6 +195,7 @@ function addBackAnchor() {
 function populateLocation() {
     nav.innerHTML = "";
     main.innerHTML = "";
+    search.value = "";
 
     let currentNode = docs;
     let breadcrumb = [];
