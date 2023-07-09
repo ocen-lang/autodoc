@@ -204,3 +204,17 @@ a.namespace:hover {
     text-decoration: #aa9cf1 wavy underline 2px !important;
     border-bottom: none !important;
 }
+
+.section {
+    display: table;
+}
+
+.section h3 {
+    display: table-row;
+}
+
+.section h3 .description {
+    display: table-cell;
+    padding-left: 2em;
+    width: 100%;
+}

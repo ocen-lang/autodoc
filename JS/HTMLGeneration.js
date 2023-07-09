@@ -219,6 +219,12 @@ const genHeader = (title) => {
     return header;
 }
 
+const genSection = () => {
+    let section = document.createElement('div');
+    section.classList.add('section');
+    return section;
+}
+
 const genFunction = (node) => {
     let functionDiv = document.createElement('div');
     let p = document.createElement('p');

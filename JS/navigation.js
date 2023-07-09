@@ -84,23 +84,27 @@ function addNavContent(node, name, title) {
 }
 
 function addNamespaceContent(node, title) {
-    main.appendChild(genHeader(title))
+    main.appendChild(genHeader(title));
+    let section = genSection();
     Object.entries(node).forEach(([name, child]) => {
         let h3 = document.createElement('h3');
         h3.appendChild(genLink("namespaces", name, "namespace"));
         h3.appendChild(genDescription(child));
-        main.appendChild(h3);
-    })
+        section.appendChild(h3);
+    });
+    main.appendChild(section);
 }
 
 function addBuiltinContent(node, title) {
-    main.appendChild(genHeader(title))
+    main.appendChild(genHeader(title));
+    let section = genSection();
     Object.values(node).forEach((child) => {
         let h3 = document.createElement('h3');
         h3.appendChild(genLink("builtins", child.name));
         h3.appendChild(genDescription(child));
-        main.appendChild(h3);
-    })
+        section.appendChild(h3);
+    });
+    main.appendChild(section);
 }
 
 function addConstantVariableContent(node, title) {
