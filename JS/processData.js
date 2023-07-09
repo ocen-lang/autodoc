@@ -56,10 +56,8 @@ function sortObjectKeys(obj) {
 }
 
 async function setup() {
-    let response;
-    try {
-        response = await fetch('/data/docs-min.json');
-    } catch (err) {
+    let response = await fetch('/data/docs-min.json');
+    if (response.status !== 200) {
         response = await fetch('/autodoc/data/docs-min.json');
     }
     
