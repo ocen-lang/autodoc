@@ -12,7 +12,6 @@ function parseNode(node, path, name, depth) {
         case "constant":
         case "variable":
         case "namespace":
-        case "field":
             if (node.name) {
                 mapping[node.name] = [
                     path.slice(0, -1),

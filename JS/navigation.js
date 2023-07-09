@@ -196,6 +196,7 @@ function populateLocation() {
     nav.innerHTML = "";
     main.innerHTML = "";
     search.value = "";
+    toast.style.display = "block";
 
     let currentNode = docs;
     let breadcrumb = [];
