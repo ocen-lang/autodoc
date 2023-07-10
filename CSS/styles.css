@@ -93,7 +93,7 @@ hr {
 
 a {
     text-decoration: none;
-    color: #74dae7 !important;
+    color: #78d3fc !important;
     font-weight: 400;
     cursor: pointer;
     border-bottom: 1px solid rgba(116, 218, 231, 0.36);
@@ -101,8 +101,8 @@ a {
 
 a:hover {
     opacity: 1;
-    color: #74dae7 !important;
-    text-decoration: #74dae7 wavy underline 2px;
+    color: #78d3fc !important;
+    text-decoration: #78d3fc wavy underline 2px;
     text-underline-offset: 5px;
     border-bottom: none;
 }
@@ -128,8 +128,8 @@ main {
 }
 
 #breadcrumb a:hover {
-    text-decoration: #74dae7 wavy underline 4px;
-    color: #74dae7;
+    text-decoration: #78d3fc wavy underline 4px;
+    color: #78d3fc;
     text-underline-offset: 12px;
     cursor: pointer;
 }
@@ -159,7 +159,7 @@ main section {
 }
 
 .name {
-    color: #74dae7;
+    color: #78d3fc;
 }
 
 .field-long, .param-long, .param {
@@ -241,6 +241,10 @@ a.namespace:hover {
     list-style: disc;
     margin-bottom: 20px;
     padding-left: 40px;
+}
+
+.full-description pre {
+    margin-bottom: 20px;
 }
 
 .full-description p {

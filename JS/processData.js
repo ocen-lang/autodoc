@@ -21,9 +21,10 @@ function parseNode(node, path, name, depth) {
                 if (kind == "namespace") {
                     kind = "module";
                 }
-                searchMapping[node.name] = [
+                let fullName = name.slice(0, -2);
+                searchMapping[fullName] = [
                     path.slice(0, -1),
-                    name.slice(0, -2),
+                    node.name,
                     kind
                 ]
             }

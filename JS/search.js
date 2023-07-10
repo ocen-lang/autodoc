@@ -8,19 +8,19 @@ function searchDocs() {
     }
 
     // search for start of word
-    Object.keys(searchMapping).forEach((key) => {
-        if (key.toLowerCase().startsWith(query.toLowerCase())) {
-            results.set(key, searchMapping[key]);
+    Object.entries(searchMapping).forEach(([fullName, [path, name, kind]]) => {
+        if (name.toLowerCase().startsWith(query.toLowerCase())) {
+            results.set(fullName, searchMapping[fullName]);
         }
     })
 
     // search for inclusion
-    Object.keys(searchMapping).forEach((key) => {
-        if (results[key]) {
+    Object.entries(searchMapping).forEach(([fullName, [path, name, kind]]) => {
+        if (results[fullName]) {
             return;
         }
-        if (key.toLowerCase().includes(query.toLowerCase())) {
-            results.set(key, searchMapping[key]);
+        if (name.toLowerCase().includes(query.toLowerCase())) {
+            results.set(fullName, searchMapping[fullName]);
         }
     })
     return results;
@@ -36,7 +36,7 @@ search.addEventListener('input', (e) => {
     const results = searchDocs();
     if (results.size > 0) {
         main.innerHTML = "";
-        results.forEach(([path, full_name, kind], name) => {
+        results.forEach(([path, name, kind], fullName) => {
             let resultDiv = document.createElement('div');
             resultDiv.classList.add('search-result');
 
@@ -48,7 +48,7 @@ search.addEventListener('input', (e) => {
             resultDiv.appendText(` (${kind})`, "search-result-kind");
 
             let p = document.createElement('p');
-            p.appendText(full_name, "description");
+            p.appendText(fullName, "description");
             resultDiv.appendChild(p);
 
             main.appendChild(resultDiv);
