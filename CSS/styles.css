@@ -1,3 +1,7 @@
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'JetBrains Mono', monospace;
     font-size: 16px;
@@ -41,17 +45,19 @@ nav::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
 
 #searchInput{
     border-style: none;
+    background-color: #333333;
     font-family: inherit;
-    padding: 7px;
+    padding: 17px;
     font-size: 16px;
     letter-spacing: 2px;
     outline: none;
     font-weight: 100;
     color: #fff;
-    opacity: .8;
-    background-color: transparent;
     border-bottom:1px solid rgba(255,255,255,.5);
-    margin: 20px;
+    margin: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 #searchInput::placeholder{
@@ -220,7 +226,10 @@ a.namespace:hover {
 }
 
 .search-result {
-    margin-bottom: 15px;
+    padding: 5px 15px;
+    cursor: pointer;
+    scroll-margin-bottom: 65px;
+    scroll-margin-top: 120px;
 }
 
 .search-result-kind {
@@ -268,5 +277,10 @@ pre {
     color: #ddd;
     background-color: #222;
     padding: 10px;
+    border-radius: 5px;
+}
+
+.focused-result {
+    background-color: #222;
     border-radius: 5px;
 }
