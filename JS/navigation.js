@@ -1,6 +1,7 @@
 const nav = document.querySelector('#sideNav');
 const main = document.querySelector('#main');
 const toast = document.querySelector('#breadcrumb');
+const sourceLink = document.querySelector('#sourceLink');
 
 let currentURL = "#ocen"
 
@@ -84,6 +85,7 @@ function addFunctionMethodContent(node, title) {
 }
 
 function addMainContent(node) {
+    genSourceLink(node.source)
     if (node.description) {
         let descP = document.createElement('pre');
         descP.classList.add('full-description');

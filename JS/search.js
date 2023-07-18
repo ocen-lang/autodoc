@@ -1,4 +1,5 @@
 const search = document.getElementById('searchInput');
+const breadcrumbDiv = document.getElementById('breadcrumbDiv');
 
 let resultsDivs = [];
 let selectedIndex = 0;
@@ -33,11 +34,11 @@ function searchDocs() {
 
 search.addEventListener('input', (e) => {
     if (search.value.length <= 0) {
-        toast.style.display = "block";
+        breadcrumbDiv.style.display = "flex";
         populatePage();
         return;
     }
-    toast.style.display = "none";
+    breadcrumbDiv.style.display = "none";
     const results = searchDocs();
     resultsDivs = [];
     selectedIndex = 0;
