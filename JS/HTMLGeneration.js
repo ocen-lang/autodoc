@@ -19,6 +19,16 @@ const genLink = (parentName, childName, className) => {
     return a;
 }
 
+const genSourceLink = (source) => {
+    if (!source) {
+        sourceLink.innerText = "";
+        return;
+    }
+    sourceLink.href = `https://github.com/ocen-lang/ocen/tree/master/${source}`;
+    sourceLink.target = "_blank";
+    sourceLink.innerText = "[source]";
+}
+
 const genDescription = (node) => {
     let description = document.createElement('span');
     description.classList.add('description');

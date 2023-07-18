@@ -32,14 +32,14 @@ nav::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
 }
 
 #banner img {
-    width: 80%;
+    width: 170px;
 }
 
 #banner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px 0;
+    margin: 20px 0 0 0;
     border-bottom: none;
 }
 
@@ -54,7 +54,7 @@ nav::-webkit-scrollbar-thumb, main::-webkit-scrollbar-thumb {
     font-weight: 100;
     color: #fff;
     border-bottom:1px solid rgba(255,255,255,.5);
-    margin: 15px;
+    margin: 15px 0;
     position: sticky;
     top: 0;
     z-index: 1;
@@ -124,19 +124,13 @@ main {
 }
 
 #breadcrumb {
-    font-size: 30px;
+    font-size: 23px;
     color: #e9effc;
-    margin-bottom: 20px;
-    /* allow text to wrap */
-    white-space: pre-wrap;
-    /* fallback if wrap is not supported */
-    white-space: -moz-pre-wrap;
 }
 
 #breadcrumb a:hover {
-    text-decoration: #78d3fc wavy underline 4px;
+    text-decoration: #78d3fc wavy underline 2px;
     color: #78d3fc;
-    text-underline-offset: 12px;
     cursor: pointer;
 }
 
@@ -283,4 +277,23 @@ pre {
 .focused-result {
     background-color: #222;
     border-radius: 5px;
+}
+
+.source-link {
+    color: #a2a2a2 !important;
+    font-size: 15px;
+    border-bottom: 1px solid #a2a2a2 !important;
+}
+
+.source-link:hover {
+    color: #a2a2a2 !important;
+    text-decoration: #a2a2a2 wavy underline 2px;
+    border-bottom: none !important;
+}
+
+#breadcrumbDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
