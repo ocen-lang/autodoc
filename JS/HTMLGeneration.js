@@ -33,7 +33,7 @@ const genDescription = (node) => {
     let description = document.createElement('span');
     description.classList.add('description');
     if (node.description) {
-        description.innerHTML = "&nbsp;// ";
+        description.innerHTML = "//&nbsp;";
         let firstLine = node.description.split("\n")[0].trim();
         description.appendChild(evalLinks(firstLine));
     }

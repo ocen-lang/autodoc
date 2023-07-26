@@ -60,6 +60,7 @@ search.addEventListener('input', (e) => {
             resultDiv.appendChild(p);
             
             resultDiv.addEventListener('click', (e) => {
+                breadcrumbDiv.style.display = "flex";
                 resultLink.click();
             })
             resultDiv.addEventListener('mouseover', (e) => {
