@@ -214,6 +214,10 @@ a.namespace:hover {
     display: table-row;
 }
 
+.section h3 div {
+    width: max-content;
+}
+
 .section h3 .description {
     display: table-cell;
     padding-left: 2em;

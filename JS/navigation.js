@@ -71,10 +71,17 @@ function addConstantVariableContent(node, title) {
 }
 
 function addEnumStructContent(node, title) {
-    main.appendChild(genHeader(title))
+    main.appendChild(genHeader(title));
+    let section = genSection();
     Object.values(node).forEach((child) => {
-        main.appendChild(genSummary(child));
-    })
+        let h3 = document.createElement('h3');
+        let div = document.createElement('div');
+        div.appendChild(genSummary(child));
+        h3.appendChild(div);
+        h3.appendChild(genDescription(child));
+        section.appendChild(h3);
+    });
+    main.appendChild(section);
 }
 
 function addFunctionMethodContent(node, title) {
