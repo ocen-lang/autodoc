@@ -170,7 +170,6 @@ const genSummary = (child) => {
     summarySpan.classList.add(child.kind);
     summarySpan.appendText(child.kind + " ", "keyword");
     summarySpan.appendChild(genLink(child.kind + "s", child.name));
-    summarySpan.appendChild(genDescription(child));
 
     return summarySpan;
 }
