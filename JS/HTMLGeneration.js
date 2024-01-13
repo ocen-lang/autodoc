@@ -116,6 +116,11 @@ const genParam = (param) => {
     let typeSpan = evalLinks(param.type, true);
     paramSpan.appendChild(typeSpan);
 
+    if (param.default_value) {
+        paramSpan.appendText(" = ", "punctuation");
+        paramSpan.appendText(param.default_value, "default-value");
+    }
+
     return paramSpan;
 }
 
@@ -149,6 +154,16 @@ const genFunctionSummary = (node) => {
     functionSpan.appendChild(genDescription(node));
 
     return functionSpan;
+}
+
+const genTypedefSummary = (child) => {
+    let typedefSpan = document.createElement('span');
+    typedefSpan.classList.add('typedef');
+    typedefSpan.appendText("typedef ", "keyword");
+    typedefSpan.appendText(child.name);
+    typedefSpan.appendText(" = ", "punctuation");
+    typedefSpan.appendChild(evalLinks(child.type));
+    return typedefSpan;
 }
 
 const genVariable = (node) => {
@@ -292,4 +307,10 @@ const genFunction = (node) => {
     functionDiv.appendChild(returnP);
 
     return functionDiv;
+}
+
+const genTypedef = (node) => {
+    let div = document.createElement('div');
+    div.appendChild(genTypedefSummary(node));
+    return div;
 }

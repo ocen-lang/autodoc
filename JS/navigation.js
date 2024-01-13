@@ -15,6 +15,7 @@ const nodeMap = new Map([
     ["unions", "Unions"],
     ["functions", "Functions"],
     ["methods", "Methods"],
+    ["typedefs", "TypeDefs"],
 ])
 
 window.addEventListener('hashchange', (event) => {
@@ -91,6 +92,13 @@ function addFunctionMethodContent(node, title) {
     })
 }
 
+function addTypedefContent(node, title) {
+    main.appendChild(genHeader(title))
+    Object.values(node).forEach((child) => {
+        main.appendChild(genTypedefSummary(child));
+    });
+}
+
 function addMainContent(node) {
     genSourceLink(node.source)
     if (node.description) {
@@ -122,6 +130,10 @@ function addMainContent(node) {
             main.appendChild(genFunction(node));
             main.appendChild(document.createElement('br'))
             break;
+        case "typedef":
+            main.appendChild(genTypedef(node));
+            main.appendChild(document.createElement('br'))
+            break;
     }
 
     nodeMap.forEach((value, key) => {
@@ -145,6 +157,9 @@ function addMainContent(node) {
                 case "functions":
                 case "methods":
                     addFunctionMethodContent(node[key], value);
+                    break;
+                case "typedefs":
+                    addTypedefContent(node[key], value);
                     break;
                 default:
                     console.log(node);
