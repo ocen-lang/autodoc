@@ -34,8 +34,10 @@ const genDescription = (node) => {
     description.classList.add('description');
     if (node.description) {
         description.innerHTML = "//&nbsp;";
-        let firstLine = node.description.split("\n")[0].trim();
-        description.appendChild(evalLinks(firstLine));
+        let firstLine = node.description.trim().split("\n")[0].trim();
+        if (firstLine) {
+            description.appendChild(evalLinks(firstLine));
+        }
     }
     return description;
 }
@@ -118,7 +120,7 @@ const genParam = (param) => {
 
     if (param.default_value) {
         paramSpan.appendText(" = ", "punctuation");
-        paramSpan.appendText(param.default_value, "default-value");
+        paramSpan.appendText(param.default_value, "punctuation");
     }
 
     return paramSpan;
@@ -199,12 +201,35 @@ const genEnum = (node) => {
     enumDiv.appendChild(nameSpan);
     enumDiv.appendText("{", "punctuation");
 
-    if (node.fields) {
-        node.fields.forEach((field) => {
+    if (node.shared_fields && node.shared_fields.length > 0) {
+        node.shared_fields.forEach((field) => {
             let p = document.createElement('p');
             p.classList.add('field-long');
-            p.appendText(field.name);
+            p.appendChild(genParam(field));
             p.appendChild(genDescription(field));
+            enumDiv.appendChild(p);
+        })
+        // Empty line
+        let p = document.createElement('br');
+        enumDiv.appendChild(p);
+    }
+
+    if (node.variants) {
+        node.variants.forEach((variant) => {
+            let p = document.createElement('p');
+            p.classList.add('field-long');
+            p.appendText(variant.name);
+            if (variant.fields && variant.fields.length > 0) {
+                p.appendText("(", "punctuation");
+                variant.fields.forEach((field, index) => {
+                    if (index !== 0) {
+                        p.appendText(", ", "punctuation");
+                    }
+                    p.appendChild(evalLinks(field, true));
+                })
+                p.appendText(")", "punctuation");
+            }
+            // p.appendChild(genDescription(variant));
             enumDiv.appendChild(p);
         })
     }
