@@ -64,10 +64,15 @@ function sortObjectKeys(obj) {
 async function setup() {
     try {
         // Local testing
-        let response = await fetch('docs.json');
-
-        // // Github deployment
-        if (response.status !== 200) {
+        let response;
+        try {    
+            response = await fetch('docs.json');
+            // Github deployment
+            if (response.status !== 200) {
+                response = await fetch('https://raw.githubusercontent.com/ocen-lang/ocen/docs/docs.json');
+            }
+        } catch (e) {
+            // Github deployment
             response = await fetch('https://raw.githubusercontent.com/ocen-lang/ocen/docs/docs.json');
         }
 
